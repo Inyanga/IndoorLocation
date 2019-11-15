@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">IndoorLocation</string>
+    <string name="permission_message">Для продолжения работы приложению необходимо разрешение на получение геолокации</string>
+    <string name="permission_title">Запрос геолокации</string>
+</resources>
