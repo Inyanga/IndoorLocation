@@ -46,26 +46,26 @@ private val scannerCallback = object : ScanCallback() {
 
     override fun onScanResult(callbackType: Int, result: ScanResult?) {
         result?.let {
-//            val mac = result.device.address
-//            when {
-//                averageRssi[mac] == null || averageRssi[mac]?.size == 0 -> {
-//                    val rssiArray: ArrayList<Int> = ArrayList()
-//                    rssiArray.add(result.rssi)
-//                    averageRssi[mac] = rssiArray
-//                }
-//                averageRssi[mac]!!.size < rssiThreshold -> averageRssi[mac]!!.add(result.rssi)
-//                averageRssi[mac]!!.size >= rssiThreshold -> {
-//                    val avr = averageRssi[mac]!!
-//                        .sortedWith(sortRssiList())
-//                        .reduce { acc, it ->
-//                            acc + it
-//                        }
-//                }
-//                else -> {
-//
-//                }
-//            }
-            parseRecord(result)
+            val mac = result.device.address
+            when {
+                averageRssi[mac] == null || averageRssi[mac]?.size == 0 -> {
+                    val rssiArray: ArrayList<Int> = ArrayList()
+                    rssiArray.add(result.rssi)
+                    averageRssi[mac] = rssiArray
+                }
+                averageRssi[mac]!!.size < rssiThreshold -> averageRssi[mac]!!.add(result.rssi)
+                averageRssi[mac]!!.size >= rssiThreshold -> {
+                    val avr = averageRssi[mac]!!
+                        .sortedWith(sortRssiList())
+                        .reduce { acc, it ->
+                            acc + it
+                        }
+                }
+                else -> {
+
+                }
+            }
+//            parseRecord(result)
         }
     }
 }
