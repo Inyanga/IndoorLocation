@@ -2,8 +2,10 @@ package com.test.indoorlocation.foreground_service
 
 import android.app.Service
 import android.content.Intent
+import android.os.Handler
 import android.os.IBinder
 import android.util.Log
+import com.test.indoorlocation.ble.BeaconManager
 import com.test.indoorlocation.ble.startScan
 
 
@@ -17,6 +19,7 @@ class ForegroundBleService : Service() {
         Log.i("DEBUG_FOREGROUND", "Foreground service started")
         startForeground(serviceId, createNotification(this))
         startScan()
+        BeaconManager.calculateDistance()
         return START_STICKY
     }
 
