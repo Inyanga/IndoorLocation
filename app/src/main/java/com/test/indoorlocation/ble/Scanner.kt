@@ -19,7 +19,8 @@ const val eddyUuid = "0000FEAA-0000-1000-8000-00805F9B34FB"
 val serviceUuid = ParcelUuid.fromString(eddyUuid)
 
 private val averageRssi = ConcurrentHashMap<String, ArrayList<Int>>()
-private const val rssiThreshold = 10
+private const val rssiThreshold = 20
+private const val excludeOutliners = 18
 
 fun startScan() {
     val scanFilter = ScanFilter.Builder().setServiceUuid(serviceUuid).build()
@@ -27,7 +28,7 @@ fun startScan() {
         .bluetoothLeScanner
         .startScan(
             listOf(scanFilter),
-            ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_BALANCED).build(),
+            ScanSettings.Builder().setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY).build(),
             scannerCallback
         )
 }
@@ -57,15 +58,18 @@ private val scannerCallback = object : ScanCallback() {
                 averageRssi[mac]!!.size >= rssiThreshold -> {
                     val avr = averageRssi[mac]!!
                         .sortedWith(sortRssiList())
-                        .reduce { acc, it ->
-                            acc + it
+                        .subList(2,18)
+                        .reduce { acc, rssi ->
+                            acc + rssi
                         }
+                    Log.i("DEBUG_RSSSI_AVG", "${result.device.address}  ${avr/ excludeOutliners}")
+                    averageRssi[mac]!!.clear()
+                    parseRecord(result, avr/ excludeOutliners)
                 }
                 else -> {
 
                 }
             }
-//            parseRecord(result)
         }
     }
 }
@@ -78,7 +82,7 @@ fun sortRssiList() = Comparator<Int> { r1, r2 ->
     }
 }
 
-private fun parseRecord(result: ScanResult) {
+private fun parseRecord(result: ScanResult, avgRssi: Int) {
     val map = result.scanRecord?.serviceData
     val bytes: ByteArray? = map?.get(serviceUuid)
     bytes?.let {
@@ -88,7 +92,7 @@ private fun parseRecord(result: ScanResult) {
             tx,
             ByteParser.shortToInt(bytes[14], bytes[15]),
             ByteParser.shortToInt(bytes[16], bytes[17]),
-            result.rssi
+            avgRssi
         )
         BeaconManager.saveBeacon(beacon)
         Log.i("DEBUG_SCANNER", "$beacon")

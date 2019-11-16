@@ -9,6 +9,7 @@ import kotlin.math.pow
 import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer.Optimum
 import com.lemmingapex.trilateration.TrilaterationFunction
 import com.lemmingapex.trilateration.NonLinearLeastSquaresSolver
+import com.test.indoorlocation.RxPublisher
 
 import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer
 
@@ -37,7 +38,6 @@ object BeaconManager {
 
 
             if (nearestBeacons.size >= 3) {
-                Log.i("DEBUG_BEACON_POINT", "Calculate point")
                 for(i in distances.indices){
                     distances[i] = calculateDistance(nearestBeacons[i])
                 }
@@ -53,6 +53,7 @@ object BeaconManager {
                 )
                 val optimum = solver.solve()
                 val point = optimum.point.toArray()
+                RxPublisher.publishPoint(point)
                 Log.i("DEBUG_BEACON_POINT", "${point[0]} ${point[1]}")
             }
 
