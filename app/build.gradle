@@ -39,4 +39,8 @@ dependencies {
 
     //trilateration
     implementation 'com.lemmingapex.trilateration:trilateration:1.0.2'
+
+    implementation('org.eclipse.paho:org.eclipse.paho.android.service:1.0.2') {
+        exclude module: 'support-v4'
+    }
 }
